@@ -17,6 +17,7 @@ pub(super) struct CRUDResourceMeta {
     pub(super) generate_router: bool,
     pub(super) enum_case_sensitive: bool,
     pub(super) fulltext_language: Option<String>,
+    pub(super) framework: Option<String>,
 }
 
 impl CRUDResourceMeta {
@@ -45,6 +46,9 @@ impl CRUDResourceMeta {
         }
         if self.column_type.is_none() {
             self.column_type = Some("Column".to_string());
+        }
+        if self.framework.is_none() {
+            self.framework = Some("axum".to_string());
         }
         self
     }

@@ -871,7 +871,7 @@ pub(super) fn generate_conditional_crud_impl(
     };
 
     let router_impl = if crud_meta.generate_router && has_crud_resource_fields {
-        generate_router_impl(api_struct_name)
+        generate_router_impl(api_struct_name, &crud_meta.framework)
     } else {
         quote! {}
     };
@@ -885,14 +885,15 @@ pub(super) fn generate_conditional_crud_impl(
     }
 }
 
-pub(super) fn generate_router_impl(api_struct_name: &syn::Ident) -> proc_macro2::TokenStream {
+pub(super) fn generate_router_impl(api_struct_name: &syn::Ident, framework: &Option<String>) -> proc_macro2::TokenStream {
     let create_model_name = format_ident!("{}Create", api_struct_name);
     let update_model_name = format_ident!("{}Update", api_struct_name);
     let list_model_name = format_ident!("{}List", api_struct_name);
+    let framework = framework.as_deref().unwrap_or("axum");
 
     quote! {
         // Generate CRUD handlers using the crudcrate macro
-        crudcrate::crud_handlers!(#api_struct_name, #update_model_name, #create_model_name, #list_model_name);
+        crudcrate::crud_handlers!(#api_struct_name, #update_model_name, #create_model_name, #list_model_name, #framework);
 
         /// Generate router with all CRUD endpoints
         pub fn router(db: &sea_orm::DatabaseConnection) -> utoipa_axum::router::OpenApiRouter
